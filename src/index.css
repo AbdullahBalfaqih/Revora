@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.premium-btn {
+  --black: #000000;
+  --ch-black: #141414;
+  --eer-black: #1b1b1b;
+  --night-rider: #2e2e2e;
+  --white: #ffffff;
+  --af-white: #f3f3f3;
+  --ch-white: #e1e1e1;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border: none;
+  color: white !important;
+  position: relative;
+  cursor: pointer;
+  font-weight: 700;
+  transition-duration: .2s;
+  background-color: var(--ch-black) !important;
+  transform-style: preserve-3d;
+}
+
+.premium-btn:before, .premium-btn:after {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: -1px;
+  border-radius: 10px;
+  background: linear-gradient(45deg, 
+  var(--ch-black), var(--eer-black),
+  var(--night-rider), var(--ch-white), var(--night-rider), 
+	var(--eer-black), var(--ch-black),var(--ch-black));
+  background-size: 400%;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  transform: translateZ(-1px);
+  animation: steam 20s linear infinite;
+}
+
+@keyframes steam {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+.premium-btn:after {
+  filter: blur(20px);
+  opacity: 0.6;
+}
