@@ -267,12 +267,12 @@ export default function PropertyDetail() {
               {/* Agentic Digital Twin AI */}
               <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="flex flex-col gap-4">
                 <h2 className="text-[#2A2A2A] font-sans text-[32px] xl:text-[40px] font-semibold leading-[48px] flex items-center gap-3">
-                  <FiCpu className="text-[#00FF41]" /> Agentic AI Digital Twin
+                  <FiCpu className="text-[#171717]" /> Agentic AI Digital Twin
                 </h2>
                 <div className="w-full bg-[#171717] rounded-[10px] p-8 border border-[#2A2A2A] shadow-inner text-white">
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-[#A3A3A3] text-sm font-semibold uppercase tracking-wider">Live Forecast Model</span>
-                    <span className="text-[#00FF41] text-xs font-semibold px-2 py-1 bg-[rgba(0,255,65,0.1)] rounded border border-[#00FF41]">Active</span>
+                    <span className="text-[#FFF] text-xs font-semibold px-2 py-1 bg-[rgba(255,255,255,0.1)] rounded border border-[rgba(255,255,255,0.2)]">Active</span>
                   </div>
                   {isGeneratingTwin ? (
                     <div className="flex items-center gap-3 text-[#A3A3A3] italic text-sm">
