@@ -271,7 +271,7 @@ export default function PropertyDetail() {
                 </h2>
                 <div className="w-full bg-[#171717] rounded-[10px] p-8 border border-[#2A2A2A] shadow-inner text-white">
                   <div className="flex justify-between items-center mb-4">
-                    <span className="text-[#A3A3A3] text-sm font-semibold uppercase tracking-wider">Live Forecast Model</span>
+                    <span className="text-[#A3A3A3] text-sm font-semibold tracking-wider">Live Forecast Model</span>
                     <span className="text-[#FFF] text-xs font-semibold px-2 py-1 bg-[rgba(255,255,255,0.1)] rounded border border-[rgba(255,255,255,0.2)]">Active</span>
                   </div>
                   {isGeneratingTwin ? (
