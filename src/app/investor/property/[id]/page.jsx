@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import CardNav from '../../../../components/CardNav';
 import { RiShieldCheckLine } from 'react-icons/ri';
-import { FiSend } from 'react-icons/fi';
+import { FiSend, FiCpu } from 'react-icons/fi';
 
 const propertiesData = {
   '1': {
@@ -110,12 +110,41 @@ export default function PropertyDetail() {
   const [contactEmail, setContactEmail] = useState('');
   const [contactMessage, setContactMessage] = useState('');
   const [showLegal, setShowLegal] = useState(false);
+  const [twinForecast, setTwinForecast] = useState(null);
+  const [isGeneratingTwin, setIsGeneratingTwin] = useState(false);
+
+  const property = propertiesData[params.id] || propertiesData['1'];
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const property = propertiesData[params.id] || propertiesData['1'];
+  React.useEffect(() => {
+    async function fetchTwin() {
+      setIsGeneratingTwin(true);
+      try {
+        const res = await fetch('/api/agents', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            task_type: 'twin',
+            data: { 
+              name: property.name, location: property.location, price: property.price, type: property.type 
+            }
+          })
+        });
+        const json = await res.json();
+        setTwinForecast(json.result);
+      } catch (e) {
+        console.error(e);
+      }
+      setIsGeneratingTwin(false);
+    }
+    
+    if (property) {
+      fetchTwin();
+    }
+  }, [property]);
 
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
@@ -233,6 +262,28 @@ export default function PropertyDetail() {
               <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="flex flex-col gap-[15px]">
                 <h2 className="text-[#2A2A2A] font-sans text-[32px] xl:text-[40px] font-semibold leading-[48px]">Property Description</h2>
                 <p className="text-[#666] font-sans text-lg font-medium leading-[32.4px]">{property.description}</p>
+              </motion.div>
+
+              {/* Agentic Digital Twin AI */}
+              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="flex flex-col gap-4">
+                <h2 className="text-[#2A2A2A] font-sans text-[32px] xl:text-[40px] font-semibold leading-[48px] flex items-center gap-3">
+                  <FiCpu className="text-[#00FF41]" /> Agentic AI Digital Twin
+                </h2>
+                <div className="w-full bg-[#171717] rounded-[10px] p-8 border border-[#2A2A2A] shadow-inner text-white">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-[#A3A3A3] text-sm font-semibold uppercase tracking-wider">Live Forecast Model</span>
+                    <span className="text-[#00FF41] text-xs font-semibold px-2 py-1 bg-[rgba(0,255,65,0.1)] rounded border border-[#00FF41]">Active</span>
+                  </div>
+                  {isGeneratingTwin ? (
+                    <div className="flex items-center gap-3 text-[#A3A3A3] italic text-sm">
+                      <FiCpu className="animate-spin" /> Synchronizing live market data with digital twin...
+                    </div>
+                  ) : (
+                    <p className="text-[#FFF] font-sans text-[15px] leading-[28px] m-0">
+                      {twinForecast || "Forecast data currently unavailable."}
+                    </p>
+                  )}
+                </div>
               </motion.div>
 
 

@@ -96,11 +96,43 @@ export default function Tokenize() {
   const [isMinting, setIsMinting] = useState(false);
   const { isConnected, connectWallet, publicKey } = useCasperWallet();
 
-  // Toast Notification state
   const [toast, setToast] = useState({ visible: false, message: '', type: 'error' });
 
   // Success Modal state
   const [successModal, setSuccessModal] = useState({ visible: false, assetName: '', deployHash: '' });
+
+  // AI Evaluation State
+  const [aiScore, setAiScore] = useState(null);
+  const [isEvaluating, setIsEvaluating] = useState(false);
+
+  const runAiEvaluation = async () => {
+    setIsEvaluating(true);
+    setAiStatus('Agentic AI: Analyzing Reality Score and compliance...');
+    try {
+      const payload = {
+        task_type: 'evaluator',
+        data: {
+          assetName, assetCategory, jurisdiction, tokenPrice, tokenSupply, expectedApy, esgScore, isShariahCompliant
+        }
+      };
+      const res = await fetch('/api/agents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const json = await res.json();
+      if (json.result) {
+        setAiScore(json.result);
+        setAiStatus(`Agentic AI: Reality Score calculated (${json.result.score}/100)`);
+      } else {
+        setAiStatus('Agentic AI: Evaluation failed. Check API configuration.');
+      }
+    } catch (e) {
+      console.error(e);
+      setAiStatus('Agentic AI: Network Error during evaluation.');
+    }
+    setIsEvaluating(false);
+  };
 
   const showToast = (message, type = 'error') => {
     setToast({ visible: true, message, type });
@@ -743,6 +775,31 @@ export default function Tokenize() {
                         <span style={{ color: '#A3A3A3', fontFamily: 'monospace' }}>Verified</span>
                       </div>
                     </div>
+                  </div>
+
+                  {/* AI Reality Score Section */}
+                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '16px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <span style={{ color: '#FFF', fontSize: '14px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '8px' }}><FiCpu /> Agentic AI Due Diligence</span>
+                      {!aiScore && (
+                        <button onClick={runAiEvaluation} disabled={isEvaluating} style={{ padding: '6px 12px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFF', borderRadius: '4px', cursor: isEvaluating ? 'wait' : 'pointer', fontSize: '12px' }}>
+                          {isEvaluating ? 'Evaluating...' : 'Run Reality Score'}
+                        </button>
+                      )}
+                    </div>
+                    {aiScore && (
+                      <div style={{ background: 'rgba(0, 255, 65, 0.05)', border: '1px solid rgba(0, 255, 65, 0.2)', padding: '16px', borderRadius: '8px', color: '#FFF' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                          <span style={{ fontSize: '13px', color: TEXT_SECONDARY }}>Reality Score</span>
+                          <span style={{ fontWeight: '600', color: '#00FF41' }}>{aiScore.score}/100</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                          <span style={{ fontSize: '13px', color: TEXT_SECONDARY }}>Risk Level</span>
+                          <span style={{ fontWeight: '600' }}>{aiScore.risk_level}</span>
+                        </div>
+                        <p style={{ fontSize: '13px', lineHeight: '1.5', color: '#CCC', margin: 0 }}>{aiScore.report}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
 

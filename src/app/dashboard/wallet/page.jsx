@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { FiSend, FiArrowDownLeft, FiArrowUpRight, FiSearch, FiBell, FiMenu, FiPlus, FiRefreshCcw, FiShield } from 'react-icons/fi';
+import { FiSend, FiArrowDownLeft, FiArrowUpRight, FiSearch, FiBell, FiMenu, FiPlus, FiRefreshCcw, FiShield, FiCopy, FiLogOut, FiCpu, FiInfo } from 'react-icons/fi';
 import { RiDonutChartFill, RiStackLine, RiBriefcase4Line, RiDashboardLine, RiWalletLine, RiHistoryLine, RiSettings4Line, RiBuilding4Line, RiCoinLine, RiStore2Line, RiBarChartBoxLine, RiShieldCheckLine } from 'react-icons/ri';
 
 const BG = '#080808';
@@ -11,14 +11,131 @@ const TEXT_SECONDARY = '#A3A3A3';
 const FONT = "'Jost', sans-serif";
 
 import { useCasperWallet } from '../../context/CasperWalletContext';
+import { CasperServiceByJsonRPC, CLPublicKey } from 'casper-js-sdk';
 
 export default function Wallet() {
   const isSidebarOpen = true;
   const { publicKey, isConnected, connectWallet, disconnectWallet } = useCasperWallet();
+  const [csprBalance, setCsprBalance] = useState('0.00');
+  const [isFetching, setIsFetching] = useState(false);
+  const [showDisconnectModal, setShowDisconnectModal] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [isDisconnecting, setIsDisconnecting] = useState(false);
+  
+  // Custom Black Popup State
+  const [popup, setPopup] = useState({ visible: false, message: '' });
+  const showPopup = (message) => {
+    setPopup({ visible: true, message });
+    setTimeout(() => {
+      setPopup({ visible: false, message: '' });
+    }, 3000);
+  };
+  
+  const [aiTreasuryAdvice, setAiTreasuryAdvice] = useState(null);
+  const [isTreasuryAnalyzing, setIsTreasuryAnalyzing] = useState(false);
+
+  const runTreasuryAI = async () => {
+    if (!isConnected) {
+      showPopup("Please connect a wallet first.");
+      return;
+    }
+    setIsTreasuryAnalyzing(true);
+    try {
+      const res = await fetch('/api/agents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          task_type: 'treasury',
+          data: { balance: csprBalance + ' CSPR', options: ['Aave USDC (6% APY)', 'Lido ETH (3.5% APY)', 'Casper Validator Stake (8% APY)'] }
+        })
+      });
+      const json = await res.json();
+      setAiTreasuryAdvice(json.result);
+    } catch(e) {
+      console.error(e);
+    }
+    setIsTreasuryAnalyzing(false);
+  };
+
+  const handleConnectClick = async () => {
+    setIsConnecting(true);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    connectWallet();
+    setIsConnecting(false);
+  };
+
+  const handleDisconnectConfirm = async () => {
+    setIsDisconnecting(true);
+    await new Promise(resolve => setTimeout(resolve, 1200));
+    disconnectWallet();
+    setIsDisconnecting(false);
+    setShowDisconnectModal(false);
+  };
+
+  React.useEffect(() => {
+    let isMounted = true;
+    
+    async function fetchBalance() {
+      if (!isConnected || !publicKey) {
+        setCsprBalance('0.00');
+        return;
+      }
+      
+      try {
+        setIsFetching(true);
+        const client = new CasperServiceByJsonRPC("https://rpc.testnet.casperlabs.io/rpc");
+        
+        // 1. Get State Root Hash
+        const stateRootHash = await client.getStateRootHash();
+        
+        // 2. Parse Public Key
+        let clPublicKey;
+        try {
+          clPublicKey = CLPublicKey.fromHex(publicKey);
+        } catch (e) {
+          console.error("Invalid public key hex:", e);
+          setIsFetching(false);
+          return;
+        }
+
+        // 3. Get Account Balance URef
+        const balanceUref = await client.getAccountBalanceUrefByPublicKey(clPublicKey, stateRootHash);
+        
+        if (!balanceUref) {
+          if (isMounted) setCsprBalance('0.00');
+          setIsFetching(false);
+          return;
+        }
+        
+        // 4. Get Balance (in motes)
+        const balanceMotes = await client.getAccountBalance(stateRootHash, balanceUref);
+        
+        // 5. Convert to CSPR (1 CSPR = 1,000,000,000 motes)
+        const balanceCSPR = (parseFloat(balanceMotes.toString()) / 1000000000).toFixed(2);
+        
+        if (isMounted) {
+          setCsprBalance(balanceCSPR);
+        }
+      } catch (error) {
+        console.error("Error fetching balance:", error);
+      } finally {
+        if (isMounted) setIsFetching(false);
+      }
+    }
+
+    fetchBalance();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isConnected, publicKey]);
+
+  const csprUsdValue = (parseFloat(csprBalance) * 0.035).toFixed(2);
+  const totalUsdValue = csprUsdValue;
 
   const tokens = [
-    { id: 1, name: 'Casper', symbol: 'CSPR', amount: isConnected ? '100.00' : '0.00', value: isConnected ? '$3.50' : '$0.00', iconUrl: '/images/CSPR.png' },
-    { id: 2, name: 'USD Coin', symbol: 'USDC', amount: isConnected ? '1,500.00' : '0.00', value: isConnected ? '$1,500.00' : '$0.00', iconUrl: 'https://assets.coingecko.com/coins/images/6319/large/USD_Coin_icon.png' },
+    { id: 1, name: 'Casper', symbol: 'CSPR', amount: isConnected ? csprBalance : '0.00', value: isConnected ? `$${csprUsdValue}` : '$0.00', iconUrl: '/images/CSPR.png' },
+    { id: 2, name: 'USD Coin', symbol: 'USDC', amount: '0.00', value: '$0.00', iconUrl: 'https://assets.coingecko.com/coins/images/6319/large/USD_Coin_icon.png' },
     { id: 3, name: 'Ethereum', symbol: 'ETH', amount: '0.00', value: '$0.00', iconUrl: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png' },
   ];
 
@@ -40,6 +157,8 @@ export default function Wallet() {
         .sidebar-icon:hover { background: rgba(255,255,255,0.05); color: #FFF; }
         .sidebar-icon.active { background: rgba(255,255,255,0.1); color: #FFF; }
         .sidebar-label { font-size: 14px; font-weight: 500; opacity: ${isSidebarOpen ? 1 : 0}; max-width: ${isSidebarOpen ? '200px' : '0px'}; transition: all 0.3s ease; overflow: hidden; }
+        .spin-icon { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
         @media (max-width: 1024px) { .left-col { grid-column: span 12; } .right-col { grid-column: span 12; } }
         @media (max-width: 768px) { .dashboard-grid { gap: 16px; } .header-nav { flex-direction: column; align-items: flex-start; gap: 16px; } .sidebar { display: none !important; } .main-content { padding: 16px !important; } }
       `}</style>
@@ -150,22 +269,30 @@ export default function Wallet() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <div style={{ color: TEXT_SECONDARY, fontSize: '14px', marginBottom: '8px' }}>Total Balance (USD)</div>
-                  <div style={{ fontSize: '48px', fontWeight: '500' }}>{isConnected ? '$1,503.50' : '$0.00'}</div>
+                  <div style={{ fontSize: '48px', fontWeight: '500' }}>
+                    {isConnected ? (isFetching ? 'Fetching...' : `$${Number(totalUsdValue).toLocaleString(undefined, {minimumFractionDigits: 2})}`) : '$0.00'}
+                  </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
                   {isConnected ? (
                     <>
-                      <div style={{ background: 'rgba(0,255,65,0.1)', color: '#00FF41', padding: '6px 12px', borderRadius: '50px', fontSize: '12px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#00FF41' }}></div>
-                        Connected: {publicKey?.substring(0, 6)}...{publicKey?.substring(publicKey.length - 4)}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ background: 'rgba(255,255,255,0.1)', color: '#FFF', padding: '6px 12px', borderRadius: '4px', fontSize: '12px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid rgba(255,255,255,0.2)' }}>
+                          <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#FFF' }}></div>
+                          Connected: {publicKey?.substring(0, 6)}...{publicKey?.substring(publicKey.length - 4)}
+                        </div>
+                        <button onClick={() => { navigator.clipboard.writeText(publicKey); showPopup('Address copied to clipboard!'); }} style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFF', width: '28px', height: '28px', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s ease' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'} title="Copy Address">
+                          <FiCopy size={14} />
+                        </button>
+                        <button onClick={() => setShowDisconnectModal(true)} style={{ background: 'rgba(255,50,50,0.1)', border: '1px solid rgba(255,50,50,0.2)', color: '#FF5555', width: '28px', height: '28px', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s ease' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,50,50,0.2)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,50,50,0.1)'} title="Disconnect Wallet">
+                          <FiLogOut size={14} />
+                        </button>
                       </div>
-                      <button onClick={disconnectWallet} style={{ background: 'transparent', color: TEXT_SECONDARY, border: 'none', fontSize: '12px', cursor: 'pointer', textDecoration: 'underline' }}>
-                        Disconnect
-                      </button>
                     </>
                   ) : (
-                    <button onClick={connectWallet} className="premium-btn" style={{ fontSize: '14px', cursor: 'pointer' }}>
-                      Connect Wallet
+                    <button onClick={handleConnectClick} disabled={isConnecting} className="premium-btn" style={{ fontSize: '14px', cursor: isConnecting ? 'wait' : 'pointer', opacity: isConnecting ? 0.8 : 1, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {isConnecting && <FiRefreshCcw className="spin-icon" />}
+                      {isConnecting ? 'Connecting...' : 'Connect Wallet'}
                     </button>
                   )}
                 </div>
@@ -182,6 +309,24 @@ export default function Wallet() {
                   <FiRefreshCcw /> Swap
                 </button>
               </div>
+            </div>
+
+            {/* Autonomous Treasury AI */}
+            <div style={{ background: CARD_BG, borderRadius: '24px', padding: '32px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px', fontWeight: '500' }}>
+                  <FiCpu color="#00FF41" /> Autonomous Treasury AI
+                </div>
+                <button onClick={runTreasuryAI} disabled={isTreasuryAnalyzing} style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#FFF', padding: '8px 16px', borderRadius: '6px', fontSize: '13px', cursor: isTreasuryAnalyzing ? 'wait' : 'pointer' }}>
+                  {isTreasuryAnalyzing ? 'Analyzing...' : 'Optimize Yield'}
+                </button>
+              </div>
+              <p style={{ color: TEXT_SECONDARY, fontSize: '14px', margin: 0 }}>Let the AI agent analyze your current balance and recommend the optimal auto-staking or yield route.</p>
+              {aiTreasuryAdvice && (
+                <div style={{ background: 'rgba(0, 255, 65, 0.05)', border: '1px solid rgba(0, 255, 65, 0.2)', padding: '16px', borderRadius: '8px', color: '#FFF', fontSize: '14px', lineHeight: '1.6', marginTop: '8px' }}>
+                  <strong>Agent Recommendation:</strong> {aiTreasuryAdvice}
+                </div>
+              )}
             </div>
 
             {/* Tokens List */}
@@ -255,6 +400,41 @@ export default function Wallet() {
 
         </div>
         </div>
+
+        {/* Disconnect Modal */}
+        {showDisconnectModal && (
+          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '40px', maxWidth: '400px', width: '90%', display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center', textAlign: 'center', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}>
+              <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(255,50,50,0.1)', color: '#FF5555', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '8px' }}>
+                <FiLogOut size={28} />
+              </div>
+              <div>
+                <h3 style={{ fontSize: '22px', fontWeight: '600', marginBottom: '12px', color: '#FFF' }}>Disconnect Wallet?</h3>
+                <p style={{ color: TEXT_SECONDARY, fontSize: '15px', lineHeight: '1.6' }}>Are you sure you want to disconnect your Casper wallet? You will need to reconnect to interact with the Testnet.</p>
+              </div>
+              <div style={{ display: 'flex', gap: '16px', width: '100%', marginTop: '8px' }}>
+                <button onClick={() => setShowDisconnectModal(false)} disabled={isDisconnecting} style={{ flex: 1, padding: '14px', background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#FFF', borderRadius: '8px', cursor: isDisconnecting ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '15px', transition: 'all 0.2s', opacity: isDisconnecting ? 0.5 : 1 }} onMouseEnter={(e) => !isDisconnecting && (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')} onMouseLeave={(e) => !isDisconnecting && (e.currentTarget.style.background = 'transparent')}>Cancel</button>
+                <button onClick={handleDisconnectConfirm} disabled={isDisconnecting} style={{ flex: 1, padding: '14px', background: '#FF5555', border: 'none', color: '#000', borderRadius: '8px', cursor: isDisconnecting ? 'wait' : 'pointer', fontWeight: '600', fontSize: '15px', transition: 'all 0.2s', opacity: isDisconnecting ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }} onMouseEnter={(e) => !isDisconnecting && (e.currentTarget.style.opacity = '0.8')} onMouseLeave={(e) => !isDisconnecting && (e.currentTarget.style.opacity = '1')}>
+                  {isDisconnecting ? <FiRefreshCcw className="spin-icon" color="#000" /> : 'Disconnect'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Custom White Popup */}
+        {popup.visible && (
+          <div style={{ position: 'fixed', bottom: '40px', left: '50%', transform: 'translateX(-50%)', background: '#FFFFFF', border: '1px solid #E5E5E5', color: '#171717', padding: '16px 24px', borderRadius: '12px', fontSize: '15px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', zIndex: 9999, animation: 'fadeInUp 0.3s ease' }}>
+            <FiInfo size={18} color="#171717" />
+            {popup.message}
+          </div>
+        )}
+        <style>{`
+          @keyframes fadeInUp {
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+          }
+        `}</style>
       </main>
     </div>
   );

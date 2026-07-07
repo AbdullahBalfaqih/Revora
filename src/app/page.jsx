@@ -82,7 +82,7 @@ const buttonStyles = `
 const OpenAccountButton = ({ dark = false, text = "Get Started" }) => (
   <>
     <style dangerouslySetInnerHTML={{ __html: buttonStyles }} />
-    <a href="/dashboard" className="button1" style={{
+    <a href="/investor" className="button1" style={{
       '--btn-bg': dark ? '#111112' : '#FFF',
       '--btn-text': dark ? '#FFF' : '#040405',
       '--btn-icon-bg': dark ? '#FFF' : '#040405',
@@ -147,7 +147,7 @@ function HeroSection() {
   return (
     <section id="hero" ref={heroRef} style={{ background: BG, padding: '64px 0 20px', minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
       <Navbar />
-      <div className="gsap-hero" style={{ ...containerStyle, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px', flex: 1, justifyContent: 'center', marginTop: '60px' }}>
+      <div className="gsap-hero" style={{ ...containerStyle, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px', flex: 1, justifyContent: 'center', marginTop: '60px', position: 'relative', zIndex: 20 }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', padding: '6px 16px 6px 6px', borderRadius: '50px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.05)' }}>
           <div style={{ background: '#FFF', borderRadius: '50px', padding: '4px 12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ color: '#040405', fontFamily: FONT, fontSize: '13px', fontWeight: 600 }}>NEW</span>
@@ -163,7 +163,7 @@ function HeroSection() {
       </div>
 
       {/* Overlapping Image at the Boundary */}
-      <div className="gsap-hero-img hover:-translate-y-4 hover:scale-[1.02] transition-all duration-500 cursor-pointer drop-shadow-[0_30px_60px_rgba(0,0,0,0.8)] hover:drop-shadow-[0_40px_80px_rgba(255,255,255,0.15)]" style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translate(-50%, 65%)', width: '100%', maxWidth: '700px', zIndex: 10 }}>
+      <div className="gsap-hero-img transition-all duration-500 drop-shadow-[0_30px_60px_rgba(0,0,0,0.8)]" style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translate(-50%, 65%)', width: '100%', maxWidth: '700px', zIndex: 10, pointerEvents: 'none' }}>
         <img src="/images/a11c1eb3dc27aa61a415ab5ae7c18a1eb55a6ff4.png.png" alt="Cards" style={{ width: '100%', height: 'auto', display: 'block' }} />
       </div>
     </section>

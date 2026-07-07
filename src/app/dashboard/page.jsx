@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { FiArrowUpRight, FiArrowDownLeft, FiBell, FiCopy, FiCheck, FiX, FiLoader, FiShield } from 'react-icons/fi';
+import { FiArrowUpRight, FiArrowDownLeft, FiBell, FiCopy, FiCheck, FiX, FiLoader, FiShield, FiCpu, FiActivity, FiTarget, FiDatabase, FiZap } from 'react-icons/fi';
 import { RiDashboardLine, RiWalletLine, RiBuilding4Line, RiCoinLine, RiStore2Line, RiBarChartBoxLine, RiHistoryLine, RiShieldCheckLine, RiSettings4Line } from 'react-icons/ri';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -95,6 +95,45 @@ export default function DashboardOverview() {
       { name: 'Hosting', date: 'Jan 12, 2026 - 2:30 PM', amount: '$45.00 USD', logo: 'H' },
     ]
   };
+
+  const x402Logs = [
+    { id: 1, type: 'x402', text: 'Paid 0.05 CSPR to RWA_Oracle for Miami Plaza valuation.', color: '#FFFFFF' },
+    { id: 2, type: 'AI', text: 'Due diligence passed. Status: Active Yield.', color: '#E0E0E0' },
+    { id: 3, type: 'x402', text: 'Paid 0.02 CSPR to DeFi_Index for US Treasury yields.', color: '#C0C0C0' }
+  ];
+
+  const discoveredOpportunities = [
+    {
+      id: 1,
+      name: 'Miami Commercial Plaza',
+      apy: '+8.4% APY',
+      risk: 'LOW',
+      tags: ['REAL ESTATE'],
+      action: 'Auto-Invest',
+      hasIcon: true,
+      disabled: false
+    },
+    {
+      id: 2,
+      name: 'Dubai Marina Luxury Apt',
+      apy: '+7.1% APY',
+      risk: 'LOW',
+      tags: ['SHARIAH COMPLIANT'],
+      action: 'Auto-Invest',
+      hasIcon: true,
+      disabled: false
+    },
+    {
+      id: 3,
+      name: 'Tech Startup Factoring',
+      apy: '+12.5% APY',
+      risk: 'HIGH',
+      tags: ['HIGH RISK INVOICES'],
+      action: null,
+      hasIcon: true,
+      disabled: true
+    }
+  ];
 
   return (
     <div style={{ display: 'flex', background: BG, minHeight: '100vh', color: TEXT_PRIMARY, fontFamily: FONT }}>
@@ -475,6 +514,99 @@ export default function DashboardOverview() {
 
             </div>
 
+          </div>
+
+          {/* AI AGENT HUB SECTION */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '20px', position: 'relative' }}>
+            {/* Background Shape */}
+            <div style={{ position: 'absolute', top: '-20px', left: '-20px', width: '100px', height: '100px', borderTop: '2px solid rgba(255,255,255,0.05)', borderLeft: '2px solid rgba(255,255,255,0.05)', pointerEvents: 'none' }}></div>
+            
+            <header style={{ position: 'relative', zIndex: 1 }}>
+              <h2 style={{ fontSize: '24px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '10px', letterSpacing: '-0.02em', color: '#FFF' }}>
+                <FiCpu style={{ color: '#FFF' }} /> Revora Agentic AI
+              </h2>
+              <p style={{ color: TEXT_SECONDARY, fontSize: '15px' }}>Autonomous Portfolio Management & Risk Analysis</p>
+            </header>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px', position: 'relative', zIndex: 1 }}>
+              
+              {/* Agent Status & DeFi Yield Routing */}
+              <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '20px', background: 'linear-gradient(145deg, #121212 0%, #0A0A0A 100%)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={{ fontSize: '16px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px', color: '#FFF' }}><FiActivity /> Agent Status</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 255, 255, 0.1)', padding: '6px 12px', borderRadius: '20px', border: '1px dashed rgba(255,255,255,0.3)' }}>
+                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#FFF', boxShadow: '0 0 8px #FFF' }}></span>
+                    <span style={{ color: '#FFF', fontSize: '12px', fontWeight: '600' }}>ACTIVE & MONITORING</span>
+                  </div>
+                </div>
+                
+                <p style={{ color: TEXT_SECONDARY, fontSize: '14px', lineHeight: '1.5' }}>
+                  The Revora AI is actively scanning Casper DeFi protocols and RWA markets. Yield routing is enabled.
+                </p>
+
+                <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <span style={{ color: TEXT_SECONDARY, fontSize: '12px' }}>Current Strategy</span>
+                    <span style={{ fontWeight: '600', fontSize: '15px', color: '#FFF' }}>Silver-Tier Yield (Casper/USDC)</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' }}>
+                    <span style={{ color: TEXT_SECONDARY, fontSize: '12px' }}>Target APY</span>
+                    <span style={{ fontWeight: '700', fontSize: '18px', color: '#FFF' }}>14.2%</span>
+                  </div>
+                </div>
+
+                {/* Simulated x402 Terminal */}
+                <div style={{ marginTop: 'auto', background: '#050505', borderRadius: '12px', padding: '16px', border: '1px solid rgba(255,255,255,0.15)', height: '140px', overflow: 'hidden', position: 'relative' }}>
+                  <div style={{ position: 'absolute', right: 0, bottom: 0, width: '40px', height: '40px', background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)' }}></div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: '8px' }}>
+                    <FiDatabase size={14} color="#FFF" />
+                    <span style={{ fontSize: '12px', color: '#FFF', fontWeight: '600', letterSpacing: '1px' }}>x402 MICROPAYMENTS LOG</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontFamily: 'monospace', fontSize: '12px' }}>
+                    {x402Logs.map(log => (
+                      <p key={log.id} style={{ color: log.color }}>{'>'} [{log.type}] {log.text}</p>
+                    ))}
+                    <motion.p style={{ color: '#888' }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ repeat: Infinity, duration: 1, repeatType: "reverse" }}>
+                      {'>'} Awaiting new opportunities_
+                    </motion.p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Opportunity Discovery & Risk Analysis */}
+              <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '20px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={{ fontSize: '16px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px', color: '#FFF' }}><FiTarget /> Discovered Opportunities</h3>
+                  <button style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.4)', color: '#FFF', padding: '6px 12px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={(e) => e.target.style.background = '#FFF'} onMouseOut={(e) => e.target.style.background = 'transparent'} onMouseEnter={(e) => e.target.style.color = '#000'} onMouseLeave={(e) => e.target.style.color = '#FFF'}>Refresh</button>
+                </div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {discoveredOpportunities.map(opp => (
+                    <div key={opp.id} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', opacity: opp.disabled ? 0.5 : 1 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ fontWeight: '600', fontSize: '15px', color: '#FFF' }}>{opp.name}</span>
+                        <span style={{ color: '#FFF', fontWeight: '700', fontSize: '15px' }}>{opp.apy}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <span style={{ background: 'rgba(255, 255, 255, 0.1)', color: '#FFF', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', border: '1px solid rgba(255,255,255,0.2)' }}>RISK: {opp.risk}</span>
+                          {opp.tags.map((tag, idx) => (
+                            <span key={idx} style={{ background: 'transparent', color: '#CCC', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', border: '1px solid rgba(255,255,255,0.1)' }}>
+                              {opp.disabled && opp.hasIcon ? <><FiX style={{display:'inline', marginBottom:'-2px'}}/> </> : null}{tag}
+                            </span>
+                          ))}
+                        </div>
+                        {opp.action && (
+                          <button style={{ background: '#FFF', color: '#000', border: 'none', padding: '6px 16px', borderRadius: '4px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            {opp.hasIcon && !opp.disabled && <FiZap />} {opp.action}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>

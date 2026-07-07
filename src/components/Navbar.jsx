@@ -130,7 +130,8 @@ export default function Navbar() {
           </div>
 
           {/* Desktop CTA */}
-          <button
+          <a
+            href="/investor"
             className="desktop-nav nav-anim"
             style={{
               display: 'inline-flex',
@@ -145,13 +146,14 @@ export default function Navbar() {
               fontSize: '14px',
               fontWeight: 500,
               lineHeight: '20px',
+              textDecoration: 'none',
               cursor: 'pointer',
               flexShrink: 0,
               whiteSpace: 'nowrap',
             }}
           >
-            Connect Wallet
-          </button>
+            Invest
+          </a>
 
           {/* Mobile Toggle Button */}
           <button
@@ -210,9 +212,12 @@ export default function Navbar() {
           ))}
         </div>
         
-        <button
+        <a
+          href="/investor"
           onClick={() => setIsOpen(false)}
           style={{
+            display: 'block',
+            textAlign: 'center',
             width: '100%',
             padding: '14px',
             borderRadius: '50px',
@@ -221,13 +226,14 @@ export default function Navbar() {
             fontFamily: FONT_INTER,
             fontSize: '16px',
             fontWeight: 600,
+            textDecoration: 'none',
             border: 'none',
             cursor: 'pointer',
             marginTop: '10px'
           }}
         >
-          Connect Wallet
-        </button>
+          Invest
+        </a>
       </div>
     </>
   );

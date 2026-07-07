@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { TextAnimate } from '../../components/magicui/text-animate';
 import CardNav from '../../components/CardNav';
 import { RiShieldCheckLine } from 'react-icons/ri';
-import { FiSend } from 'react-icons/fi';
+import { FiSend, FiBell, FiInfo } from 'react-icons/fi';
 export default function Realtab() {
   const [activeTab, setActiveTab] = useState('Buy');
   const [activeAccordion, setActiveAccordion] = useState(1);
@@ -29,10 +29,10 @@ export default function Realtab() {
   }, [activeLegalAsset]);
   const handleSearchSubmit = () => {
     if (!searchName || !searchEmail) {
-      alert('Please fill out your name and email before submitting.');
+      showPopup('Please fill out your name and email before submitting.');
       return;
     }
-    alert(`Success! We've received your ${activeTab.toLowerCase()} request for ${searchCategory}.\n\nName: ${searchName}\nEmail: ${searchEmail}`);
+    showPopup(`Success! We've received your ${activeTab.toLowerCase()} request for ${searchCategory}.`);
     setSearchName('');
     setSearchEmail('');
   };
@@ -222,7 +222,7 @@ export default function Realtab() {
               <div className="shrink-0 bg-transparent w-6 h-20 hidden xl:block"></div>
 
               {/* Submit Button */}
-              <button className="flex py-3.5 px-6 justify-center items-center gap-2 shrink-0 rounded-lg bg-[#2A2A2A] hover:bg-[#333] transition-colors cursor-pointer w-full xl:w-auto h-[52px]">
+              <button onClick={handleSearchSubmit} className="flex py-3.5 px-6 justify-center items-center gap-2 shrink-0 rounded-lg bg-[#2A2A2A] hover:bg-[#333] transition-colors cursor-pointer w-full xl:w-auto h-[52px]">
                 <p className="text-[#FFF] font-sans text-lg font-semibold leading-5 whitespace-nowrap">Submit</p>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6"><path fillRule="evenodd" clipRule="evenodd" d="M12.352 3.95202C12.577 3.7273 12.882 3.60107 13.2 3.60107C13.518 3.60107 13.823 3.7273 14.048 3.95202L21.248 11.152C21.4727 11.377 21.599 11.682 21.599 12C21.599 12.318 21.4727 12.623 21.248 12.848L14.048 20.048C13.8205 20.26 13.5197 20.3754 13.2088 20.3699C12.8979 20.3644 12.6013 20.2385 12.3814 20.0186C12.1616 19.7988 12.0356 19.5021 12.0301 19.1913C12.0247 18.8804 12.1401 18.5795 12.352 18.352L17.503 13.2H3.60002C3.28176 13.2 2.97654 13.0736 2.7515 12.8485C2.52645 12.6235 2.40002 12.3183 2.40002 12C2.40002 11.6818 2.52645 11.3765 2.7515 11.1515C2.97654 10.9264 3.28176 10.8 3.60002 10.8H17.503L12.352 5.64802C12.1273 5.42302 12.0011 5.11802 12.0011 4.80002C12.0011 4.48202 12.1273 4.17702 12.352 3.95202Z" fill="white" /></svg>
               </button>
@@ -990,9 +990,32 @@ export default function Realtab() {
               </div>
             </div>
           </div>
-          <div className="flex py-0 px-[30px] flex-col justify-center items-center gap-2.5 absolute w-full h-[100px] overflow-hidden"></div>
-    <div className="flex p-5 justify-end items-start absolute top-[654px] w-full"></div>
+          <div className="flex flex-col gap-6 pt-10 border-t border-[rgba(255,255,255,0.1)] w-full max-w-[1300px]">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-[#A3A3A3] text-sm">&copy; 2026 Revora Platform. All rights reserved.</p>
+            <div className="flex gap-6">
+              <a href="#" className="text-[#A3A3A3] hover:text-white transition-colors">Twitter</a>
+              <a href="#" className="text-[#A3A3A3] hover:text-white transition-colors">LinkedIn</a>
+              <a href="#" className="text-[#A3A3A3] hover:text-white transition-colors">Discord</a>
+            </div>
+          </div>
+        </div>
+
       </div>
+
+      {/* Custom White Popup */}
+      {popup.visible && (
+        <div style={{ position: 'fixed', bottom: '40px', left: '50%', transform: 'translateX(-50%)', background: '#FFFFFF', border: '1px solid #E5E5E5', color: '#171717', padding: '16px 24px', borderRadius: '12px', fontSize: '15px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', zIndex: 9999, animation: 'fadeInUp 0.3s ease' }}>
+          <FiInfo size={18} color="#171717" />
+          {popup.message}
+        </div>
+      )}
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translate(-50%, 20px); }
+          to { opacity: 1; transform: translate(-50%, 0); }
+        }
+      `}</style>
 
   {/* Legal &amp; SPV Modal */ }
   {
