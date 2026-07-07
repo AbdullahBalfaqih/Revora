@@ -212,7 +212,7 @@ export default function Realtab() {
                   value={searchEmail}
                   onChange={(e) => setSearchEmail(e.target.value)}
                   placeholder="jane@framer.com"
-                  className="text-[#171717] font-sans text-[clamp(16px,2vw,20px)] font-medium leading-[30px] w-full border-none outline-none bg-transparent placeholder-[#999] italic"
+                  className="text-[#171717] font-sans text-[clamp(16px,2vw,20px)] font-medium leading-[30px] w-full border-none outline-none bg-transparent placeholder-[#999]"
                 />
                 <div className="w-full h-px bg-[#E2E2E2]"></div>
               </div>
@@ -222,7 +222,7 @@ export default function Realtab() {
               {/* Property Type */}
               <div className="flex flex-col items-start gap-2 shrink-0 w-full xl:w-[260px]">
                 <div className="flex justify-between items-center w-full cursor-pointer">
-                  <p className="text-[#999] font-sans text-[clamp(16px,2vw,20px)] font-medium leading-[30px] italic">Property Type</p>
+                  <p className="text-[#999] font-sans text-[clamp(16px,2vw,20px)] font-medium leading-[30px]">Property Type</p>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-5 h-5"><path d="M6 9L12 15L18 9" stroke="#999" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </div>
                 <div className="w-full h-px bg-[#E2E2E2]"></div>
@@ -999,16 +999,7 @@ export default function Realtab() {
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-6 pt-10 border-t border-[rgba(255,255,255,0.1)] w-full max-w-[1300px]">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-[#A3A3A3] text-sm">&copy; 2026 Revora Platform. All rights reserved.</p>
-            <div className="flex gap-6">
-              <a href="#" className="text-[#A3A3A3] hover:text-white transition-colors">Twitter</a>
-              <a href="#" className="text-[#A3A3A3] hover:text-white transition-colors">LinkedIn</a>
-              <a href="#" className="text-[#A3A3A3] hover:text-white transition-colors">Discord</a>
-            </div>
-          </div>
-        </div>
+
 
       </div>
 
