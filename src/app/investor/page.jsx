@@ -14,6 +14,15 @@ export default function Realtab() {
   const [searchCategory, setSearchCategory] = useState('Industrial');
   const [activeLegalAsset, setActiveLegalAsset] = useState(null);
 
+  // Custom White Popup State
+  const [popup, setPopup] = useState({ visible: false, message: '' });
+  const showPopup = (message) => {
+    setPopup({ visible: true, message });
+    setTimeout(() => {
+      setPopup({ visible: false, message: '' });
+    }, 3500);
+  };
+
   React.useEffect(() => {
     if (activeLegalAsset) {
       document.body.style.overflow = 'hidden';
