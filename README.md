@@ -104,12 +104,4 @@ cargo build --release --target wasm32-unknown-unknown
 | Phase 2 | AI appraisal and automation |
 | Phase 3 | Institutional adoption and mainnet expansion |
 
-## License
-
-MIT License
-"""
-
-output = "/mnt/data/Revora_README.txt"
-pypandoc.convert_text(content, 'plain', format='md', outputfile=output, extra_args=['--standalone'])
-
-output
+ 
