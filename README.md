@@ -1,6 +1,4 @@
-import pypandoc
 
-content = r"""# Revora
 
 ## Institutional-Grade Autonomous Real-World Asset Infrastructure Powered by Agentic AI
 
